@@ -1,4 +1,4 @@
-name: Ensure correct base branch
+name: Git Flow
 
 on:
   pull_request_target:
@@ -11,17 +11,25 @@ jobs:
     if: ${{ github.base_ref == 'main' }}
     name: "Ensure base branch is 'dev'"
     runs-on: ubuntu-20.04
+    env:
+      COMMENT_BODY: |
+        Thank you for your contribution!
+        New PRs should use `dev` as the base branch.
+
+        The base branch will be automatically changed for you.
 
     steps:
       - name: Submit a PR comment
         uses: actions/github-script@v5
         with:
           script: |
+            const { COMMENT_BODY } = process.env
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Thank you for your contribution to Crucible! New PRs should use `dev` as the base branch. The base branch will be automatically changed for you.'
+              body: `${COMMENT_BODY}`
             })
 
       - name: "Change the base branch to 'dev'"
