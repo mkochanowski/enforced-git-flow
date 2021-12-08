@@ -13,12 +13,24 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/github-script@v5
+      - name: Submit a PR comment
+        uses: actions/github-script@v5
         with:
           script: |
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Thank you for your contribution! Please set the base branch of the PR to `dev`.'
+              body: 'Thank you for your contribution to Crucible! New PRs should use `dev` as the base branch. The base branch will be automatically changed for you.'
+            })
+
+      - name: "Change the base branch to 'dev'"
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              base: 'dev',
             })
