@@ -1,0 +1,24 @@
+name: Ensure correct base branch
+
+on:
+  pull_request_target:
+    branches:
+      - main
+      - dev
+
+jobs:
+  ensure-base-branch-is-dev:
+    if: ${{ github.base_ref == 'main' }}
+    name: "Ensure base branch is 'dev'"
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Thank you for your contribution! Please set the base branch of the PR to `dev`.'
+            })
