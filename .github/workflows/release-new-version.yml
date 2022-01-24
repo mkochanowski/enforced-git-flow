@@ -66,6 +66,6 @@ jobs:
               repo: context.repo.repo,
               head: '${{ env.RELEASE_HEAD_BRANCH }}',
               base: 'main',
-              title: 'Release ${{ env.INCREMENTED_VERSION }}'
+              title: 'Release ${{ env.INCREMENTED_VERSION }}',
               maintainer_can_modify: true,
             })
