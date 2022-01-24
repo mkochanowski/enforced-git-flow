@@ -64,7 +64,7 @@ jobs:
             github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              head: '${{ env.head_branch }}',
+              head: 'Release ${{ env.RELEASE_HEAD_BRANCH }}',
               base: 'main',
               title: '${{ env.INCREMENTED_VERSION }}'
               maintainer_can_modify: true,
