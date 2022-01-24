@@ -1,0 +1,71 @@
+name: Release new version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_increment_type:
+        description: 'Version increment type'
+        required: false
+        default: 'auto'
+      release_head_branch:
+        description: 'Release head branch'
+        required: false
+        default: 'dev'
+
+env:
+  VERSION_FILE: version.txt
+  VERSION_INCREMENT_TYPE: ${{ github.event.inputs.version_increment_type }}
+  RELEASE_HEAD_BRANCH: ${{ github.event.inputs.release_head_branch }}
+
+jobs:
+  get-versions:
+    name: Get current and incremented versions
+    runs-on: ubuntu-20.04
+
+    outputs:
+      current_version: ${{ steps.cat_current_version_file.outputs.file_contents }}
+      incremented_version: ${{ steps.cat_new_version_file.outputs.file_contents }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ env.RELEASE_HEAD_BRANCH }}
+
+      - name: Install packages
+        run: pip install --upgrade bump2version
+
+      - name: Get current version
+        run: echo "::set-output name=file_contents::$(cat ${VERSION_FILE})"
+        id: cat_current_version_file
+
+      - name: Bump version
+        run: bump2version --current-version ${CURRENT_VERSION} ${VERSION_INCREMENT_TYPE} ${VERSION_FILE}
+        env:
+          CURRENT_VERSION: ${{ steps.cat_current_version_file.outputs.file_contents }}
+
+      - name: Set new version
+        run: echo "::set-output name=file_contents::$(cat ${VERSION_FILE})"
+        id: cat_new_version_file
+
+  create-pr-for-release:
+    name: Create PR for a new release
+    runs-on: ubuntu-20.04
+    needs: get-versions
+
+    env:
+      CURRENT_VERSION: ${{ needs.get-versions.outputs.current_version }}
+      INCREMENTED_VERSION: ${{ needs.get-versions.outputs.incremented_version }}
+
+    steps:
+      - name: Create a Pull Request
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: '${{ env.head_branch }}',
+              base: 'main',
+              title: '${{ env.INCREMENTED_VERSION }}'
+              maintainer_can_modify: true,
+            })
