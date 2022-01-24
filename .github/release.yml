@@ -1,0 +1,15 @@
+changelog:
+  exclude:
+    authors:
+      - github-actions
+
+  categories:
+    - title: Features
+      labels:
+        - new-feature
+    - title: Breaking Changes
+      labels:
+        - breaking-change
+    - title: Other Changes
+      labels:
+        - "*"
