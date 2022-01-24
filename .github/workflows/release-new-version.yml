@@ -57,6 +57,18 @@ jobs:
       INCREMENTED_VERSION: ${{ needs.get-versions.outputs.incremented_version }}
 
     steps:
+      - name: Generate release notes
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const result = await github.rest.repos.generateReleaseNotes({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: '${{ env.INCREMENTED_VERSION }}',
+              target_commitish: 'main',
+            });
+            console.log(result)
+
       - name: Create a Pull Request
         uses: actions/github-script@v5
         with:
