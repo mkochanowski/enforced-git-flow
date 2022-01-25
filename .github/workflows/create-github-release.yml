@@ -33,6 +33,8 @@ jobs:
           RELEASE_BODY: ${{ github.event.pull_request.body }}
         with:
           script: |
+            const { RELEASE_BODY } = process.env
+
             github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
