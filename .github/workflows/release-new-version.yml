@@ -69,7 +69,7 @@ jobs:
             });
             console.log(result)
 
-            core.exportVariable('GENERATED_RELEASE_NOTES', result.body);
+            core.exportVariable('GENERATED_RELEASE_NOTES', result.data.body);
 
       - name: Create a Pull Request
         uses: actions/github-script@v5
