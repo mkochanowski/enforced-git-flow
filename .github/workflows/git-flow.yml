@@ -16,7 +16,6 @@ jobs:
     if: ${{ github.base_ref == 'main' && github.head_ref != 'dev' }}
     name: Ensure base branch is `dev`
     runs-on: ubuntu-20.04
-    needs: get-pr-details
 
     steps:
       - name: Submit a PR comment
