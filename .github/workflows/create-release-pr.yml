@@ -109,7 +109,7 @@ jobs:
           ref: ${{ env.RELEASE_HEAD_BRANCH }}
 
       - name: Save new version file
-        run: ${INCREMENTED_VERSION} > ${VERSION_FILE}
+        run: echo ${INCREMENTED_VERSION} > ${VERSION_FILE}
 
       - name: Commit changes
         run: |
