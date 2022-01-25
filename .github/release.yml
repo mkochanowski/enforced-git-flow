@@ -6,10 +6,12 @@ changelog:
   categories:
     - title: Features
       labels:
-        - new-feature
+        - enhancement
+
     - title: Breaking Changes
       labels:
         - breaking-change
+
     - title: Other Changes
       labels:
         - "*"
