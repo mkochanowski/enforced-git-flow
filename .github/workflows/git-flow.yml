@@ -1,26 +1,32 @@
 name: Git Flow
 
 on:
+  # https://github.blog/2020-08-03-github-actions-improvements-for-fork-and-pull-request-workflows/
   pull_request_target:
+    types:
+      - opened
+      - reopened
     branches:
       - main
-      - dev
 
 jobs:
   ensure-base-branch-is-dev:
-    if: ${{ github.base_ref == 'main' }}
-    name: "Ensure base branch is 'dev'"
+    # Ensure all PRs are opened against the dev base branch, unless
+    # the PR is synchronizing main with dev (a release from dev)
+    if: ${{ github.base_ref == 'main' && github.head_ref != 'dev' }}
+    name: Ensure base branch is `dev`
     runs-on: ubuntu-20.04
-    env:
-      COMMENT_BODY: |
-        Thank you for your contribution!
-        New PRs should use `dev` as the base branch.
-
-        The base branch will be automatically changed for you.
+    needs: get-pr-details
 
     steps:
       - name: Submit a PR comment
         uses: actions/github-script@v5
+        env:
+          COMMENT_BODY: |
+            Thank you for your contribution!
+            New PRs should use `dev` as the base branch.
+
+            The base branch will be automatically changed for you.
         with:
           script: |
             const { COMMENT_BODY } = process.env
@@ -32,7 +38,7 @@ jobs:
               body: `${COMMENT_BODY}`
             })
 
-      - name: "Change the base branch to 'dev'"
+      - name: Change PR base branch to `dev`
         uses: actions/github-script@v5
         with:
           script: |
