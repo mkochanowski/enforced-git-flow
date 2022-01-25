@@ -88,3 +88,35 @@ jobs:
               body: `${PULL_REQUEST_BODY}`,
               maintainer_can_modify: true,
             })
+
+  update-pr-with-new-version-file:
+    name: Update PR with new version file
+    runs-on: ubuntu-20.04
+    needs:
+      - get-versions
+      - create-pr-for-release
+
+    env:
+      CURRENT_VERSION: ${{ needs.get-versions.outputs.current_version }}
+      INCREMENTED_VERSION: ${{ needs.get-versions.outputs.incremented_version }}
+      GIT_USER_NAME: github-actions[bot]
+      GIT_USER_EMAIL: github-actions[bot]@users.noreply.github.com
+      GIT_REMOTE: origin
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ env.RELEASE_HEAD_BRANCH }}
+
+      - name: Save new version file
+        run: ${INCREMENTED_VERSION} > ${VERSION_FILE}
+
+      - name: Commit changes
+        run: |
+          git config user.name "${GIT_USER_NAME}"
+          git config user.email "${GIT_USER_EMAIL}"
+
+          git add ${VERSION_FILE}
+          git commit -m "Bump version to ${INCREMENTED_VERSION}"
+
+          git push ${GIT_REMOTE} ${{ env.RELEASE_HEAD_BRANCH }}
