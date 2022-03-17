@@ -1,4 +1,4 @@
-# Git Flow enforced using GitHub Actions
+# GitHub Releases flow using GitHub Actions
 
 Test 1: Update
 Test 2: Update
